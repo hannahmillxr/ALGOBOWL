@@ -42,10 +42,3 @@ def kruskals(edges: list, num_verts: int) -> list:
             num_edges+=1 
         index+=1 
     return mst
-
-
-    
-
-
-
-
