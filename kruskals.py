@@ -6,8 +6,8 @@ class Edge():
 
 class DSU(): 
     def __init__(self, num_verts: int): 
-        self.parent = [i for i in range(num_verts)]
-        self.height = [1 for i in range(num_verts)]
+        self.parent = [i for i in range(num_verts+1)]
+        self.height = [1 for i in range(num_verts+1)]
     
     def find(self, x : int) -> int: 
         if x == self.parent[x]: 
