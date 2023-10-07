@@ -1,4 +1,5 @@
 from kruskals import Edge
+
 def read_input(filename: str): 
     with open(filename, 'r') as fileIn:
         data1 = fileIn.readline()

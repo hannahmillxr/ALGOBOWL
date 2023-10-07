@@ -5,11 +5,13 @@ class Edge():
         self.weight = weight
 
     def __eq__(self,other):
-        return (self.u == other.u and self.v==other.v) or (self.u == other.v and self.v == other.u) and self.weight == other.weight
+        return ((self.u == other.u and self.v==other.v) or (self.u == other.v and self.v == other.u)) and self.weight == other.weight
 
     def __hash__(self):
        return hash((self.weight,self.u,self.v))
         
+    def __str__(self):
+       return f"{self.u}--{self.v} {self.weight}"
 
 class DSU(): 
     def __init__(self, num_verts: int): 
@@ -40,6 +42,18 @@ class DSU():
 def kruskals(edges: list, num_verts: int) -> list:
     dsu = DSU(num_verts) 
     edges.sort(key = lambda edge: edge.weight)
+    mst = []
+    num_edges  = 0
+    index = 0   
+    while index < len(edges) and num_edges < num_verts-1: 
+        if dsu.union(edges[index].u, edges[index].v):
+            mst.append(edges[index]) 
+            num_edges+=1 
+        index+=1 
+    return mst
+
+def kruskals_no_sort(edges: list, num_verts: int) -> list:
+    dsu = DSU(num_verts) 
     mst = []
     num_edges  = 0
     index = 0   

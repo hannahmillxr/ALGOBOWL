@@ -1,24 +1,24 @@
 import networkx as nx
+from kruskals import Edge
 
 def prune(mst: list,rVertices: list): 
-    def _prune(mst: list, v: int):
-        for edge in mst:
-            if edge.v == v or edge.u == v:
-                mst.remove(edge)
-        return mst
+    G2 = nx.Graph()
+    for edge in mst:
+        G2.add_edge(edge.u, edge.v, weight=edge.weight)
 
-    continue_pruning = True
-
-    while(continue_pruning):
-        mst_size = len(mst)
-
-        G2 = nx.Graph()
-        for edge in mst:
-            G2.add_edge(edge.u, edge.v)
-
+    while True:
+        remove_nodes = [] 
         for v in G2.nodes():
             if G2.degree[v] == 1 and v not in rVertices:
-                mst = _prune(mst, v)
+                remove_nodes.append(v) 
+        for node in remove_nodes:
+            G2.remove_node(node)
+        if not remove_nodes:
+            break
 
-        if mst_size == len(mst):
-            continue_pruning = False
+    res = []
+    for edge in G2.edges.data(): 
+        res.append(Edge(edge[0],edge[1], edge[2]['weight']))
+    return res
+        
+               
