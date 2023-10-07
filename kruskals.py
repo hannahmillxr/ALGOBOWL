@@ -5,7 +5,10 @@ class Edge():
         self.weight = weight
 
     def __eq__(self,other):
-        return (self.u == other.u and self.v==other.v) or (self.u == other.v and self.v == other.u)
+        return (self.u == other.u and self.v==other.v) or (self.u == other.v and self.v == other.u) and self.weight == other.weight
+
+    def __hash__(self):
+       return hash((self.weight,self.u,self.v))
         
 
 class DSU(): 

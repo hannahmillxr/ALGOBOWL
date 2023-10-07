@@ -4,7 +4,7 @@ import networkx as nx
 
 def main():
     parser = argparse.ArgumentParser(prog = "Input generator", 
-                                    description="Given a number of nodes and edges, generates a random graph with a random number of r vertices") 
+                                    description="Given a number of nodes and edges, generates a random connected graph with a random number of r vertices") 
 
     
     parser.add_argument("num_nodes",type=int)
