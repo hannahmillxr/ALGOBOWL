@@ -1,4 +1,5 @@
 from kruskals import kruskals, Edge, cost
+from prune import prune
 import argparse 
 
 
@@ -34,16 +35,15 @@ def main():
             edgesArray.append(Edge(int(line3[0]),int(line3[1]), int(line3[2])))
 
     mst = kruskals(edgesArray, parentVertices) 
+    prune(mst, rVertices)
+    cst = cost(mst) 
+    print(cst) 
+
 
     with open(args.output, 'w') as fileOut: 
-        fileOut.write(str(cost(mst))+'\n')
+        fileOut.write(str(cst)+'\n')
         fileOut.write(str(len(mst))+'\n') 
         for edge in mst: 
             fileOut.write(f"{edge.u} {edge.v}\n")  
-
-    
-    
-
-
 
 main()
