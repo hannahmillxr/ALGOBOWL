@@ -4,6 +4,13 @@ class Edge():
         self.v = v
         self.weight = weight
 
+    def __eq__(self,other):
+        return (self.u == other.u and self.v==other.v) or (self.u == other.v and self.v == other.u) and self.weight == other.weight
+
+    def __hash__(self):
+       return hash((self.weight,self.u,self.v))
+        
+
 class DSU(): 
     def __init__(self, num_verts: int): 
         self.parent = [i for i in range(num_verts+1)]
@@ -42,3 +49,6 @@ def kruskals(edges: list, num_verts: int) -> list:
             num_edges+=1 
         index+=1 
     return mst
+
+def cost(edgeList: list) -> int: 
+    return sum([e.weight for e in edgeList])
