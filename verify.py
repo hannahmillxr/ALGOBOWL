@@ -5,9 +5,9 @@ from kruskals import Edge
 
 #verification 
 def subgraph(mst: list, parentEdgesArray:list):
-    parentEdges_noweights = set((Edge(edge.u,edge.v,-1) for edge in parentEdgesArray))
+    parentEdges_noweights = [Edge(edge.u,edge.v,-1) for edge in parentEdgesArray]
     for i in mst:
-        if i not in parentEdgesArray:
+        if i not in parentEdges_noweights:
             return False
     return True
 
@@ -34,7 +34,8 @@ def has_required_vertices(mst: list, required_vertices: list):
 
 def cost_of_graph(mst: list, parentEdges: list):
     #setup dictionary 
-    parent_dict = {Edge(edge.u,edge.v,-1): edge for edge in parentEdges}
+    parent_dict = {Edge(edge.u,edge.v,-1): edge for edge in parentEdges}  
+    parent_dict = {**parent_dict, **{Edge(edge.v,edge.u,-1): edge for edge in parentEdges}}
     cost = 0
     for edge in mst:
         cost += parent_dict[edge].weight

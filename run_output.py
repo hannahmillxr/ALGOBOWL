@@ -18,7 +18,7 @@ def main():
 
 
     mst = kruskals(edgesArray, parentVertices) 
-    prune(mst, rVertices)
+    mst =  prune(mst, rVertices)
     cst = cost(mst) 
     print(cst) 
 
