@@ -1,11 +1,14 @@
-from kruskals import kruskals_no_sort, cost
+from kruskals import kruskals_no_sort,kruskals, cost
+from approximate import KMB_3 
 from numpy.random import random
 from copy import deepcopy, copy 
 from prune import prune
 import argparse
 from read_input import read_input
+from  edge_reweighting import reweight
+import random
 
-def MH_step(edges0: list, c0: int, parentVertices: list, rVertices: list, p: float): 
+def MH_step(edges0: list, c0: int, parentVertices: int, rVertices: list, p: float): 
     def P(x): 
         return x 
     edges1 = deepcopy(edges0) 
@@ -26,13 +29,9 @@ def MH_step(edges0: list, c0: int, parentVertices: list, rVertices: list, p: flo
         return edges1,c1 
     return edges0,c0 
 
-def MH(iters: int, edges: list, parentVertices: list, rVertices: list): 
-    rSet = set(rVertices) 
-    def inR(v):
-        if v in rSet: 
-            return 0.5
-        return 0
-    edges.sort(key = lambda e: e.weight - inR(e.u) - inR(e.v))
+def MH(iters: int, edges: list, parentVertices: int, rVertices: list): 
+    edges = KMB_3(edges, parentVertices, rVertices)
+    edges.sort(key = lambda e: e.weight)
     mst0 = kruskals_no_sort(edges, parentVertices)
     mst0 = prune(mst0, rVertices) 
     c = cost(mst0)
@@ -47,6 +46,28 @@ def MH(iters: int, edges: list, parentVertices: list, rVertices: list):
     mst = prune(mst, rVertices)
     return mst
 
+def patrick_KMB(iters: int, edges: list, n: int, req_verts: list, p : int):
+    total_edges = deepcopy(edges) 
+    edges = KMB_3(edges, n, req_verts)
+    mst0 = kruskals(edges, n)
+    mst0 = prune(mst0, req_verts) 
+    c = cost(mst0)
+    min_mst = mst0 
+    min_cost = c 
+    for i in range(iters): 
+        num_take = random.randint(1,max(len(total_edges)*p//100,1))
+        new_edges = [random.choice(total_edges) for _ in range(num_take)]
+        edges = min_mst+new_edges
+        mst = kruskals(edges, n)
+        mst = prune(mst, req_verts) 
+        c = cost(mst)
+        if c <= min_cost: 
+            min_cost = c
+            min_mst = deepcopy(mst) 
+    return min_mst
+
+
+
     
 
 
@@ -60,10 +81,11 @@ def main():
     parser.add_argument('input') 
     parser.add_argument('output') 
     parser.add_argument('-i', '--iters', type=int, required = True)
+    parser.add_argument('-p', '--percent', type=int,default = 10, required = False)
     args = parser.parse_args() 
 
     parentVertices, edgesArray, numOfRvertices,rVertices = read_input(args.input)
-    mst = MH(args.iters, edgesArray, parentVertices, rVertices) 
+    #mst = reweight(edgesArray, parentVertices, rVertices,args.iters)
     cst = cost(mst) 
     print(cst)
 
