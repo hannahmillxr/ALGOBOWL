@@ -1,13 +1,15 @@
-from kruskals import kruskals_no_sort, cost
+from kruskals import cost
+from rkruskals import rkruskals_no_sort
 from numpy.random import random
 from copy import deepcopy, copy 
 from prune import prune
 import argparse
 from read_input import read_input
+from numpy import exp
 
-def MH_step(edges0: list, c0: int, parentVertices: list, rVertices: list, p: float): 
+def MH_step(edges0: list, temp: float, c0: int, parentVertices: list, rVertices: list, p: float, mst0 :list): 
     def P(x): 
-        return x 
+        return exp(x/temp) 
     edges1 = deepcopy(edges0) 
     for i in range(len(edges1)-1): 
         swp = random() 
@@ -17,14 +19,14 @@ def MH_step(edges0: list, c0: int, parentVertices: list, rVertices: list, p: flo
              edges1[i+1] = tmp
    
 
-    mst1 = kruskals_no_sort(edges1,parentVertices)
+    mst1 = rkruskals_no_sort(edges1,parentVertices, rVertices)
     mst1 = prune(mst1, rVertices)
     c1 = cost(mst1) 
     accept = min(1,P(c0)/P(c1))  
     u = random()
     if u < accept:
-        return edges1,c1 
-    return edges0,c0 
+        return mst1,edges1,c1 
+    return mst0,edges0,c0 
 
 def MH(iters: int, edges: list, parentVertices: list, rVertices: list): 
     rSet = set(rVertices) 
@@ -33,22 +35,21 @@ def MH(iters: int, edges: list, parentVertices: list, rVertices: list):
             return 0.5
         return 0
     edges.sort(key = lambda e: e.weight - inR(e.u) - inR(e.v))
-    mst0 = kruskals_no_sort(edges, parentVertices)
+    mst0 = rkruskals_no_sort(edges, parentVertices, rVertices)
     mst0 = prune(mst0, rVertices) 
+    mst = deepcopy(mst0) 
     c = cost(mst0)
+    temp = c
+    min_mst = deepcopy(mst0) 
     min_edges = edges 
     min_cost = c 
     for i in range(iters): 
-        edges,c = MH_step(edges,c,parentVertices, rVertices, .95 - (.9)*i/iters)
+        mst,edges,c = MH_step(edges,temp, c,parentVertices, rVertices, .95 - (.9)*i/(iters-1),mst)
         if c < min_cost: 
             min_cost = c
             min_edges = deepcopy(edges)
-    mst = kruskals_no_sort(min_edges,parentVertices)
-    mst = prune(mst, rVertices)
-    return mst
-
-    
-
+            min_mst = deepcopy(mst)
+    return min_mst
 
 def main():
     """ 
